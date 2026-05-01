@@ -1,0 +1,8 @@
+feature,importance,model
+injury_score_diff,1.0817145851686563,logistic_regression
+defense_epa_diff,-0.25750657866635596,logistic_regression
+rest_diff,-0.2311265086894791,logistic_regression
+turnover_margin_diff,-0.22042958261009568,logistic_regression
+is_division_game,0.20831950187224316,logistic_regression
+offense_epa_diff,-0.15748277848836092,logistic_regression
+elo_diff,-0.054074270891098744,logistic_regression
