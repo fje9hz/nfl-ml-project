@@ -154,11 +154,37 @@ button {
   cursor: pointer;
 }
 
+.scenario-group {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: #f7f9f6;
+}
+
+.scenario-heading {
+  margin-bottom: 10px;
+}
+
+.scenario-heading strong,
+.scenario-heading span {
+  display: block;
+}
+
+.scenario-heading strong {
+  margin-bottom: 3px;
+  font-size: 14px;
+}
+
+.scenario-heading span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
 .scenario-buttons {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
-  margin-bottom: 16px;
 }
 
 .scenario-buttons button {
