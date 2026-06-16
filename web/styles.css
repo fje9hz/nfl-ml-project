@@ -253,44 +253,56 @@ button {
   margin-bottom: 14px;
 }
 
-.odds-lookup {
+.form-panel .odds-lookup {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
   margin-bottom: 14px;
-  padding: 12px;
+  padding: 10px 12px;
   border: 1px solid #d6ded5;
-  background: #fbfcfa;
+  background: #f7f9f6;
 }
 
-.odds-lookup strong,
-.odds-lookup span {
+.odds-lookup-copy {
+  min-width: 0;
+}
+
+.odds-lookup-copy strong,
+.odds-lookup-copy p {
   display: block;
 }
 
-.odds-lookup strong {
+.odds-lookup-copy strong {
   color: var(--ink);
   font-size: 13px;
+  line-height: 1.2;
 }
 
-.odds-lookup span {
+.odds-lookup-copy p {
   margin-top: 3px;
   color: var(--muted);
   font-size: 12px;
   line-height: 1.35;
 }
 
-.odds-lookup a {
+.odds-lookup-link {
   flex: 0 0 auto;
-  color: var(--green);
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid #c7d4ca;
+  background: #ffffff;
+  color: var(--ink);
   font-size: 12px;
   font-weight: 900;
   text-decoration: none;
 }
 
-.odds-lookup a:hover {
-  text-decoration: underline;
+.odds-lookup-link:hover {
+  border-color: var(--green);
+  color: var(--green);
 }
 
 label span {
@@ -621,7 +633,7 @@ select:focus {
     grid-template-columns: 1fr;
   }
 
-  .odds-lookup {
+  .form-panel .odds-lookup {
     align-items: flex-start;
     flex-direction: column;
   }
