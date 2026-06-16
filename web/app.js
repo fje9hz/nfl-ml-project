@@ -176,6 +176,11 @@ function formatPercent(value) {
   return `${(value * 100).toFixed(1)}%`;
 }
 
+function trackEvent(name, parameters = {}) {
+  if (typeof window.gtag !== "function") return;
+  window.gtag("event", name, parameters);
+}
+
 function populateTeams() {
   for (const select of document.querySelectorAll("select[name='away_team'], select[name='home_team']")) {
     select.innerHTML = teams.map((team) => `<option value="${team}">${team}</option>`).join("");
@@ -344,12 +349,19 @@ async function loadImportance() {
 document.querySelectorAll("[data-scenario]").forEach((button) => {
   button.addEventListener("click", () => {
     setFormValues(scenarios[button.dataset.scenario]);
+    trackEvent("scenario_selected", {
+      scenario: button.dataset.scenario,
+      model_mode: currentMode()
+    });
     predict().catch(console.error);
   });
 });
 
 document.querySelectorAll("input[name='model_mode']").forEach((input) => {
   input.addEventListener("change", () => {
+    trackEvent("model_mode_changed", {
+      model_mode: currentMode()
+    });
     updateModeUi();
     loadMetrics().catch(console.error);
     loadImportance().catch(console.error);
@@ -357,8 +369,20 @@ document.querySelectorAll("input[name='model_mode']").forEach((input) => {
   });
 });
 
+document.querySelector(".odds-lookup-link").addEventListener("click", () => {
+  trackEvent("odds_lookup_clicked", {
+    model_mode: currentMode()
+  });
+});
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
+  const payload = readForm();
+  trackEvent("predict_matchup", {
+    model_mode: payload.model_mode,
+    home_team: payload.home_team,
+    away_team: payload.away_team
+  });
   predict().catch((error) => {
     alert("Prediction failed. Check your inputs and make sure the model has been trained.");
     console.error(error);
