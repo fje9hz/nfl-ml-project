@@ -7,12 +7,12 @@ const teams = [
 
 const scenarios = {
   example: {
-    away_team: "DAL",
-    home_team: "SF",
-    spread_line: 3.5,
-    total_line: 47.5,
-    away_moneyline: 150,
-    home_moneyline: -170,
+    away_team: "NYG",
+    home_team: "WAS",
+    spread_line: 1.5,
+    total_line: 41.5,
+    away_moneyline: 115,
+    home_moneyline: -135,
     away_rest: 6,
     home_rest: 7,
     div_game: 1,
