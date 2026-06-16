@@ -28,3 +28,22 @@ Then open:
 ```text
 http://127.0.0.1:8000
 ```
+
+## Docker
+
+Build and run locally:
+
+```bash
+docker build -t nfl-win-probability .
+docker run --rm -p 8000:8000 nfl-win-probability
+```
+
+The container runs:
+
+```text
+python -m uvicorn nfl_ml.web:app --host 0.0.0.0 --port 8000
+```
+
+You can deploy this image to Docker-friendly hosts such as Google Cloud Run,
+Fly.io, Railway, DigitalOcean App Platform, AWS App Runner, or Hugging Face
+Spaces.

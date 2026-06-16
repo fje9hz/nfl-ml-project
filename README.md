@@ -101,6 +101,19 @@ The app includes matchup inputs, win probabilities, model metrics, and a feature
 
 This repo includes a `render.yaml` file for Render deployment. See `DEPLOYMENT.md` for the exact steps and production start command.
 
+## Run With Docker
+
+```bash
+docker build -t nfl-win-probability .
+docker run --rm -p 8000:8000 nfl-win-probability
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000
+```
+
 ## Run Tests
 
 ```bash
