@@ -40,7 +40,13 @@
               <h2>Matchup Inputs</h2>
               <p>Spread is from the away-team perspective. Positive means the home team is favored.</p>
             </div>
-            <button type="button" id="load-example">Example</button>
+          </div>
+
+          <div class="scenario-buttons" aria-label="Load example scenarios">
+            <button type="button" data-scenario="example">SF favored</button>
+            <button type="button" data-scenario="closeGame">Close game</button>
+            <button type="button" data-scenario="homeUnderdog">Home underdog</button>
+            <button type="button" data-scenario="weatherGame">Bad weather</button>
           </div>
 
           <div class="field-grid teams">
@@ -58,26 +64,32 @@
             <label>
               <span>Spread Line</span>
               <input name="spread_line" type="number" step="0.5" value="3.5" required />
+              <small>Positive favors the home team. Negative favors the away team.</small>
             </label>
             <label>
               <span>Total Line</span>
               <input name="total_line" type="number" step="0.5" value="47.5" required />
+              <small>Expected combined points from both teams.</small>
             </label>
             <label>
               <span>Away Moneyline</span>
               <input name="away_moneyline" type="number" step="1" value="150" required />
+              <small>Positive means underdog payout, negative means favorite price.</small>
             </label>
             <label>
               <span>Home Moneyline</span>
               <input name="home_moneyline" type="number" step="1" value="-170" required />
+              <small>Example: -170 implies the home team is favored.</small>
             </label>
             <label>
               <span>Away Rest</span>
               <input name="away_rest" type="number" step="1" value="6" min="0" required />
+              <small>Days since the away team's previous game.</small>
             </label>
             <label>
               <span>Home Rest</span>
               <input name="home_rest" type="number" step="1" value="7" min="0" required />
+              <small>Days since the home team's previous game.</small>
             </label>
             <label>
               <span>Roof</span>
@@ -100,10 +112,12 @@
             <label>
               <span>Temperature</span>
               <input name="temp" type="number" step="1" value="65" />
+              <small>Outdoor game temperature in Fahrenheit.</small>
             </label>
             <label>
               <span>Wind</span>
               <input name="wind" type="number" step="1" value="8" min="0" />
+              <small>Wind speed in miles per hour.</small>
             </label>
           </div>
 
@@ -123,6 +137,10 @@
             </div>
             <span id="confidence" class="badge">Medium</span>
           </div>
+
+          <p id="prediction-summary" class="prediction-summary">
+            SF is slightly favored with a 58.3% home win probability.
+          </p>
 
           <div class="probability-card">
             <div>
@@ -153,17 +171,41 @@
 
           <div class="feature-box">
             <h3>Model Features Used</h3>
+            <p class="box-copy">These are the values sent to the model after the app transforms your inputs.</p>
             <div id="feature-values" class="feature-values"></div>
           </div>
         </section>
       </section>
 
       <section class="insights">
+        <div class="panel explainer-panel">
+          <div class="panel-header compact">
+            <div>
+              <h2>How To Read It</h2>
+              <p>The prediction is a probability estimate, not a guaranteed outcome.</p>
+            </div>
+          </div>
+          <div class="explain-grid">
+            <div>
+              <strong>Low confidence</strong>
+              <span>Probability is close to 50/50.</span>
+            </div>
+            <div>
+              <strong>Market inputs matter</strong>
+              <span>Spread and moneyline summarize a lot of team-strength information.</span>
+            </div>
+            <div>
+              <strong>Educational use</strong>
+              <span>This is an ML project and should not be treated as betting advice.</span>
+            </div>
+          </div>
+        </div>
+
         <div class="panel">
           <div class="panel-header compact">
             <div>
               <h2>Feature Importance</h2>
-              <p>Largest coefficients from the selected model.</p>
+              <p>Largest signals from the selected model, translated into plain English.</p>
             </div>
           </div>
           <div id="importance-chart" class="importance-chart"></div>

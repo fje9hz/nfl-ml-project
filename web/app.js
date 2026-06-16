@@ -5,20 +5,93 @@ const teams = [
   "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"
 ];
 
-const example = {
-  away_team: "DAL",
-  home_team: "SF",
-  spread_line: 3.5,
-  total_line: 47.5,
-  away_moneyline: 150,
-  home_moneyline: -170,
-  away_rest: 6,
-  home_rest: 7,
-  div_game: 1,
-  roof: "outdoors",
-  surface: "grass",
-  temp: 65,
-  wind: 8
+const scenarios = {
+  example: {
+    away_team: "DAL",
+    home_team: "SF",
+    spread_line: 3.5,
+    total_line: 47.5,
+    away_moneyline: 150,
+    home_moneyline: -170,
+    away_rest: 6,
+    home_rest: 7,
+    div_game: 1,
+    roof: "outdoors",
+    surface: "grass",
+    temp: 65,
+    wind: 8
+  },
+  closeGame: {
+    away_team: "BAL",
+    home_team: "CIN",
+    spread_line: 1.0,
+    total_line: 44.5,
+    away_moneyline: -105,
+    home_moneyline: -115,
+    away_rest: 7,
+    home_rest: 7,
+    div_game: 1,
+    roof: "outdoors",
+    surface: "fieldturf",
+    temp: 52,
+    wind: 10
+  },
+  homeUnderdog: {
+    away_team: "KC",
+    home_team: "DEN",
+    spread_line: -4.5,
+    total_line: 45.0,
+    away_moneyline: -205,
+    home_moneyline: 175,
+    away_rest: 7,
+    home_rest: 6,
+    div_game: 1,
+    roof: "outdoors",
+    surface: "grass",
+    temp: 38,
+    wind: 12
+  },
+  weatherGame: {
+    away_team: "BUF",
+    home_team: "CLE",
+    spread_line: 2.0,
+    total_line: 39.5,
+    away_moneyline: 120,
+    home_moneyline: -140,
+    away_rest: 7,
+    home_rest: 7,
+    div_game: 0,
+    roof: "outdoors",
+    surface: "grass",
+    temp: 28,
+    wind: 22
+  }
+};
+
+const featureDescriptions = {
+  spread_line: "Spread line",
+  total_line: "Game total",
+  rest_diff: "Home rest edge",
+  home_implied_prob: "Home market probability",
+  implied_prob_diff: "Market probability edge",
+  div_game: "Division game",
+  is_dome: "Dome or closed roof",
+  is_turf: "Artificial surface",
+  temp: "Temperature",
+  wind: "Wind"
+};
+
+const importanceDescriptions = {
+  spread_line: "Spread line",
+  home_implied_prob: "Home market probability",
+  implied_prob_diff: "Market probability edge",
+  is_turf: "Artificial surface",
+  is_dome: "Dome or closed roof",
+  total_line: "Game total",
+  div_game: "Division game",
+  temp: "Temperature",
+  wind: "Wind",
+  rest_diff: "Rest edge"
 };
 
 const form = document.querySelector("#prediction-form");
@@ -31,7 +104,7 @@ function populateTeams() {
   for (const select of document.querySelectorAll("select[name='away_team'], select[name='home_team']")) {
     select.innerHTML = teams.map((team) => `<option value="${team}">${team}</option>`).join("");
   }
-  setFormValues(example);
+  setFormValues(scenarios.example);
 }
 
 function setFormValues(values) {
@@ -74,10 +147,18 @@ function readForm() {
 function renderPrediction(result) {
   const homePct = formatPercent(result.home_win_probability);
   const awayPct = formatPercent(result.away_win_probability);
+  const pickProbability = result.pick === result.home_team
+    ? result.home_win_probability
+    : result.away_win_probability;
+  const edge = Math.abs(result.home_win_probability - 0.5);
+  const edgeText = edge < 0.06 ? "nearly even" : edge < 0.12 ? "slightly favored" : "favored";
 
   document.querySelector("#result-matchup").textContent = result.matchup;
   document.querySelector("#confidence").textContent = `${result.confidence} confidence`;
   document.querySelector("#pick").textContent = result.pick;
+  document.querySelector("#prediction-summary").textContent =
+    `${result.pick} is ${edgeText} with a ${formatPercent(pickProbability)} win probability. ` +
+    `This is a ${result.confidence.toLowerCase()}-confidence model edge.`;
   document.querySelector("#home-probability").textContent = homePct;
   document.querySelector("#home-ring").style.background =
     `conic-gradient(var(--green) ${result.home_win_probability * 100}%, #e3e7e2 0)`;
@@ -90,7 +171,13 @@ function renderPrediction(result) {
 
   const featureBox = document.querySelector("#feature-values");
   featureBox.innerHTML = Object.entries(result.features)
-    .map(([key, value]) => `<div class="feature-pill">${key}<strong>${value}</strong></div>`)
+    .map(([key, value]) => `
+      <div class="feature-pill">
+        ${featureDescriptions[key] || key}
+        <strong>${value}</strong>
+        <span>${key}</span>
+      </div>
+    `)
     .join("");
 }
 
@@ -138,7 +225,7 @@ async function loadImportance() {
       const width = `${Math.max((Math.abs(row.importance) / max) * 100, 4)}%`;
       return `
         <div class="importance-row">
-          <strong>${row.feature}</strong>
+          <strong>${importanceDescriptions[row.feature] || row.feature}</strong>
           <div class="importance-bar-track"><div class="importance-bar" style="width: ${width}"></div></div>
           <span>${row.importance.toFixed(3)}</span>
         </div>
@@ -147,9 +234,11 @@ async function loadImportance() {
     .join("");
 }
 
-document.querySelector("#load-example").addEventListener("click", () => {
-  setFormValues(example);
-  predict().catch(console.error);
+document.querySelectorAll("[data-scenario]").forEach((button) => {
+  button.addEventListener("click", () => {
+    setFormValues(scenarios[button.dataset.scenario]);
+    predict().catch(console.error);
+  });
 });
 
 form.addEventListener("submit", (event) => {

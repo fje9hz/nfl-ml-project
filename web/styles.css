@@ -154,12 +154,25 @@ button {
   cursor: pointer;
 }
 
-#load-example {
+.scenario-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.scenario-buttons button {
   min-height: 38px;
   padding: 0 14px;
   background: #e9efe8;
   color: var(--ink);
+  border: 1px solid #d6ded5;
   font-weight: 800;
+}
+
+.scenario-buttons button:hover {
+  border-color: var(--green);
+  background: #eef6ed;
 }
 
 .field-grid {
@@ -178,6 +191,14 @@ label span {
   color: #39475b;
   font-size: 13px;
   font-weight: 800;
+}
+
+label small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 input,
@@ -230,6 +251,17 @@ select:focus {
   text-align: center;
   font-size: 13px;
   font-weight: 900;
+}
+
+.prediction-summary {
+  margin: 0 0 16px;
+  padding: 13px 14px;
+  border-left: 4px solid var(--green);
+  background: #eef6ed;
+  color: #24334a;
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.45;
 }
 
 .probability-card {
@@ -318,6 +350,13 @@ select:focus {
   font-size: 16px;
 }
 
+.box-copy {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .feature-values {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -335,6 +374,44 @@ select:focus {
 .feature-pill strong {
   display: block;
   color: var(--ink);
+}
+
+.feature-pill span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.explainer-panel {
+  grid-column: 1 / -1;
+}
+
+.explain-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.explain-grid div {
+  padding: 14px;
+  border: 1px solid var(--line);
+  background: #f7f9f6;
+}
+
+.explain-grid strong,
+.explain-grid span {
+  display: block;
+}
+
+.explain-grid strong {
+  margin-bottom: 6px;
+}
+
+.explain-grid span {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .importance-chart {
@@ -406,8 +483,10 @@ select:focus {
   }
 
   .field-grid,
+  .scenario-buttons,
   .feature-values,
-  .metrics-table {
+  .metrics-table,
+  .explain-grid {
     grid-template-columns: 1fr;
   }
 
