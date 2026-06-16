@@ -5,6 +5,41 @@ const teams = [
   "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"
 ];
 
+const teamColors = {
+  ARI: "#97233f",
+  ATL: "#a71930",
+  BAL: "#241773",
+  BUF: "#00338d",
+  CAR: "#0085ca",
+  CHI: "#0b162a",
+  CIN: "#fb4f14",
+  CLE: "#311d00",
+  DAL: "#003594",
+  DEN: "#fb4f14",
+  DET: "#0076b6",
+  GB: "#203731",
+  HOU: "#03202f",
+  IND: "#002c5f",
+  JAX: "#006778",
+  KC: "#e31837",
+  LAC: "#0080c6",
+  LAR: "#003594",
+  LV: "#000000",
+  MIA: "#008e97",
+  MIN: "#4f2683",
+  NE: "#002244",
+  NO: "#101820",
+  NYG: "#0b2265",
+  NYJ: "#125740",
+  PHI: "#004c54",
+  PIT: "#101820",
+  SEA: "#002244",
+  SF: "#aa0000",
+  TB: "#d50a0a",
+  TEN: "#0c2340",
+  WAS: "#5a1414"
+};
+
 const scenarios = {
   example: {
     away_team: "NYG",
@@ -199,6 +234,10 @@ function modeLabel(mode) {
   return "Market";
 }
 
+function teamColor(team) {
+  return teamColors[team] || "#1f8a70";
+}
+
 function renderPrediction(result) {
   const homePct = formatPercent(result.home_win_probability);
   const awayPct = formatPercent(result.away_win_probability);
@@ -208,6 +247,9 @@ function renderPrediction(result) {
   const pickPct = formatPercent(pickProbability);
   const edge = Math.abs(result.home_win_probability - 0.5);
   const edgeText = edge < 0.06 ? "nearly even" : edge < 0.12 ? "slightly favored" : "favored";
+  const homeColor = teamColor(result.home_team);
+  const awayColor = teamColor(result.away_team);
+  const pickColor = teamColor(result.pick);
 
   document.querySelector("#result-matchup").textContent = result.matchup;
   document.querySelector("#confidence").textContent =
@@ -218,13 +260,15 @@ function renderPrediction(result) {
     `This is a ${result.confidence.toLowerCase()}-confidence model edge.`;
   document.querySelector("#pick-probability").textContent = pickPct;
   document.querySelector("#pick-ring").style.background =
-    `conic-gradient(var(--green) ${pickProbability * 100}%, #e3e7e2 0)`;
+    `conic-gradient(${pickColor} ${pickProbability * 100}%, #e3e7e2 0)`;
   document.querySelector("#home-label").textContent = `${result.home_team} win`;
   document.querySelector("#away-label").textContent = `${result.away_team} win`;
   document.querySelector("#home-bar-value").textContent = homePct;
   document.querySelector("#away-bar-value").textContent = awayPct;
   document.querySelector("#home-bar").style.width = homePct;
   document.querySelector("#away-bar").style.width = awayPct;
+  document.querySelector("#home-bar").style.backgroundColor = homeColor;
+  document.querySelector("#away-bar").style.backgroundColor = awayColor;
 
   const featureBox = document.querySelector("#feature-values");
   featureBox.innerHTML = Object.entries(result.features)
