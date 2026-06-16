@@ -1,5 +1,7 @@
 # NFL Game Outcome Machine Learning Project
 
+[Live App](https://nfl-win-probability.onrender.com) | [API Health Check](https://nfl-win-probability.onrender.com/api/health)
+
 This project trains a machine learning model to predict whether the home team wins an NFL game from real historical NFL game data.
 
 The real dataset comes from the public `nflverse`/Lee Sharpe NFL game file. It includes completed NFL games, scores, rest days, betting lines, moneylines, weather, roof/surface, and division-game flags.
