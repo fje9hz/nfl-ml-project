@@ -97,6 +97,10 @@ http://127.0.0.1:8000
 
 The app includes matchup inputs, win probabilities, model metrics, and a feature importance chart.
 
+## Deploy Online
+
+This repo includes a `render.yaml` file for Render deployment. See `DEPLOYMENT.md` for the exact steps and production start command.
+
 ## Run Tests
 
 ```bash
