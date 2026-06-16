@@ -33,7 +33,7 @@ class MatchupRequest(BaseModel):
 
 
 app = FastAPI(
-    title="NFL Win Probability Predictor",
+    title="Game Script",
     description="Interactive API for the NFL machine learning project.",
     version="0.2.0",
 )

@@ -205,6 +205,7 @@ function renderPrediction(result) {
   const pickProbability = result.pick === result.home_team
     ? result.home_win_probability
     : result.away_win_probability;
+  const pickPct = formatPercent(pickProbability);
   const edge = Math.abs(result.home_win_probability - 0.5);
   const edgeText = edge < 0.06 ? "nearly even" : edge < 0.12 ? "slightly favored" : "favored";
 
@@ -213,11 +214,11 @@ function renderPrediction(result) {
     `${modeLabel(result.model_mode)} | ${result.confidence} confidence`;
   document.querySelector("#pick").textContent = result.pick;
   document.querySelector("#prediction-summary").textContent =
-    `${result.pick} is ${edgeText} with a ${formatPercent(pickProbability)} win probability. ` +
+    `${result.pick} is ${edgeText} with a ${pickPct} win probability. ` +
     `This is a ${result.confidence.toLowerCase()}-confidence model edge.`;
-  document.querySelector("#home-probability").textContent = homePct;
-  document.querySelector("#home-ring").style.background =
-    `conic-gradient(var(--green) ${result.home_win_probability * 100}%, #e3e7e2 0)`;
+  document.querySelector("#pick-probability").textContent = pickPct;
+  document.querySelector("#pick-ring").style.background =
+    `conic-gradient(var(--green) ${pickProbability * 100}%, #e3e7e2 0)`;
   document.querySelector("#home-label").textContent = `${result.home_team} win`;
   document.querySelector("#away-label").textContent = `${result.away_team} win`;
   document.querySelector("#home-bar-value").textContent = homePct;
