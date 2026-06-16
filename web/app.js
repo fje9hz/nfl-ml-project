@@ -94,6 +94,17 @@ const importanceDescriptions = {
   rest_diff: "Rest edge"
 };
 
+const metricDescriptions = {
+  "Best model": "Algorithm selected by ROC AUC.",
+  "Rows": "Total real NFL games in the dataset.",
+  "Train rows": "Older games used to fit the model.",
+  "Test rows": "Later games held out for evaluation.",
+  "Accuracy": "Share of test games picked correctly.",
+  "ROC AUC": "How well the model ranks likely winners.",
+  "Brier score": "Probability error; lower is better.",
+  "Log loss": "Confidence penalty; lower is better."
+};
+
 const form = document.querySelector("#prediction-form");
 
 function formatPercent(value) {
@@ -211,7 +222,13 @@ async function loadMetrics() {
     ["Brier score", logistic.brier_score.toFixed(4)],
     ["Log loss", logistic.log_loss.toFixed(4)]
   ]
-    .map(([label, value]) => `<div class="metric-card"><small>${label}</small><strong>${value}</strong></div>`)
+    .map(([label, value]) => `
+      <div class="metric-card">
+        <small>${label}</small>
+        <strong>${value}</strong>
+        <span>${metricDescriptions[label]}</span>
+      </div>
+    `)
     .join("");
 }
 

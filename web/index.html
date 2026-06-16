@@ -214,6 +214,10 @@
               <p>Largest signals from the selected model, translated into plain English.</p>
             </div>
           </div>
+          <p class="section-explainer">
+            Longer bars mean the model leaned more heavily on that input when making predictions.
+            Positive and negative values show direction, but bar length shows overall influence.
+          </p>
           <div id="importance-chart" class="importance-chart"></div>
         </div>
 
@@ -224,6 +228,10 @@
               <p>Chronological test split on real NFL games.</p>
             </div>
           </div>
+          <p class="section-explainer">
+            These scores describe how the model performed on games it did not train on.
+            Higher is better for Accuracy and ROC AUC; lower is better for Brier score and Log loss.
+          </p>
           <div id="metrics-table" class="metrics-table"></div>
         </div>
       </section>

@@ -445,6 +445,16 @@ select:focus {
   gap: 11px;
 }
 
+.section-explainer {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: #f7f9f6;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 .importance-row {
   display: grid;
   grid-template-columns: 150px 1fr 70px;
@@ -484,6 +494,14 @@ select:focus {
   display: block;
   margin-top: 4px;
   font-size: 22px;
+}
+
+.metric-card span {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 @media (max-width: 860px) {
