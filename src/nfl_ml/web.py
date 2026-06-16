@@ -16,14 +16,15 @@ WEB_DIR = ROOT_DIR / "web"
 
 
 class MatchupRequest(BaseModel):
+    model_mode: str = "market"
     home_team: str = Field(..., min_length=2, max_length=3)
     away_team: str = Field(..., min_length=2, max_length=3)
-    spread_line: float
-    total_line: float = Field(..., ge=20, le=80)
+    spread_line: float = 0
+    total_line: float = Field(44, ge=20, le=80)
     home_rest: float = Field(..., ge=0, le=30)
     away_rest: float = Field(..., ge=0, le=30)
-    home_moneyline: float
-    away_moneyline: float
+    home_moneyline: float = -110
+    away_moneyline: float = -110
     div_game: int = Field(..., ge=0, le=1)
     roof: str = "outdoors"
     surface: str = "grass"
@@ -58,15 +59,16 @@ def health() -> dict[str, str]:
 
 
 @app.get("/api/metrics")
-def metrics() -> dict:
-    return load_metrics()
+def metrics(model_mode: str = "market") -> dict:
+    return load_metrics(model_mode)
 
 
 @app.get("/api/feature-importance")
-def feature_importance() -> list[dict]:
-    return load_feature_importance()
+def feature_importance(model_mode: str = "market") -> list[dict]:
+    return load_feature_importance(model_mode)
 
 
 @app.post("/api/predict")
 def predict(payload: MatchupRequest) -> dict:
-    return predict_matchup(payload.dict())
+    data = payload.dict()
+    return predict_matchup(data, model_mode=data.pop("model_mode", "market"))

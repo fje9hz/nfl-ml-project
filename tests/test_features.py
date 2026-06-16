@@ -5,7 +5,9 @@ from nfl_ml.data import prepare_games
 from nfl_ml.features import (
     MODEL_FEATURE_COLUMNS,
     REAL_MODEL_FEATURE_COLUMNS,
+    TEAM_STAT_MODEL_FEATURE_COLUMNS,
     add_matchup_features,
+    build_team_stat_model_matrix,
     build_model_matrix,
 )
 from nfl_ml.service import confidence_label
@@ -146,3 +148,55 @@ def test_confidence_label_tracks_probability_edge():
     assert confidence_label(0.51) == "Low"
     assert confidence_label(0.61) == "Medium"
     assert confidence_label(0.75) == "High"
+
+
+def test_team_stat_model_matrix_uses_prior_games_only():
+    games = pd.DataFrame(
+        [
+            {
+                "game_id": "2024_01_AAA_BBB",
+                "season": 2024,
+                "week": 1,
+                "gameday": "2024-09-08",
+                "away_team": "AAA",
+                "home_team": "BBB",
+                "away_score": 10,
+                "home_score": 20,
+                "home_win": 1,
+                "away_rest": 7,
+                "home_rest": 7,
+                "div_game": 0,
+                "roof": "outdoors",
+                "surface": "grass",
+                "temp": 65,
+                "wind": 5,
+            },
+            {
+                "game_id": "2024_02_AAA_BBB",
+                "season": 2024,
+                "week": 2,
+                "gameday": "2024-09-15",
+                "away_team": "AAA",
+                "home_team": "BBB",
+                "away_score": 14,
+                "home_score": 17,
+                "home_win": 1,
+                "away_rest": 7,
+                "home_rest": 7,
+                "div_game": 0,
+                "roof": "outdoors",
+                "surface": "grass",
+                "temp": 70,
+                "wind": 4,
+            },
+        ]
+    )
+
+    x, y, featured, team_profiles = build_team_stat_model_matrix(games)
+
+    assert list(x.columns) == TEAM_STAT_MODEL_FEATURE_COLUMNS
+    assert y.tolist() == [1, 1]
+    assert featured.loc[0, "home_win_pct"] == 0.5
+    assert featured.loc[1, "home_win_pct"] == 1.0
+    assert featured.loc[1, "away_win_pct"] == 0.0
+    assert team_profiles["BBB"]["win_pct"] == 1.0

@@ -14,7 +14,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from nfl_ml.features import build_model_matrix
+from nfl_ml.features import build_model_matrix, build_team_stat_model_matrix
 
 
 def parse_args() -> argparse.Namespace:
@@ -23,6 +23,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model-out", default="models/nfl_win_model.joblib")
     parser.add_argument("--metrics-out", default="reports/metrics.json")
     parser.add_argument("--importance-out", default="reports/feature_importance.csv")
+    parser.add_argument(
+        "--model-type",
+        choices=["market", "team"],
+        default="market",
+        help="market uses betting lines; team uses rolling team stats without Vegas inputs.",
+    )
     parser.add_argument("--test-size", type=float, default=0.25)
     parser.add_argument("--random-state", type=int, default=42)
     parser.add_argument(
@@ -124,11 +130,17 @@ def main() -> None:
         )
 
     df = pd.read_csv(data_path)
-    x, y = build_model_matrix(df)
+    artifact_extra = {}
+    if args.model_type == "team":
+        x, y, split_df, team_profiles = build_team_stat_model_matrix(df)
+        artifact_extra["team_profiles"] = team_profiles
+    else:
+        x, y = build_model_matrix(df)
+        split_df = df
     feature_columns = list(x.columns)
 
     x_train, x_test, y_train, y_test = split_data(
-        df, x, y, args.test_size, args.random_state, args.random_split
+        split_df, x, y, args.test_size, args.random_state, args.random_split
     )
 
     results = {}
@@ -145,17 +157,18 @@ def main() -> None:
     metrics_path.parent.mkdir(parents=True, exist_ok=True)
     importance_path.parent.mkdir(parents=True, exist_ok=True)
 
-    joblib.dump(
-        {
-            "model_name": best_model_name,
-            "pipeline": best_model,
-            "feature_columns": feature_columns,
-        },
-        model_path,
-    )
+    artifact = {
+        "model_name": best_model_name,
+        "model_type": args.model_type,
+        "pipeline": best_model,
+        "feature_columns": feature_columns,
+    }
+    artifact.update(artifact_extra)
+    joblib.dump(artifact, model_path)
 
     payload = {
         "best_model": best_model_name,
+        "model_type": args.model_type,
         "rows": int(len(df)),
         "train_rows": int(len(x_train)),
         "test_rows": int(len(x_test)),

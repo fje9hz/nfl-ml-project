@@ -78,7 +78,20 @@ const featureDescriptions = {
   is_dome: "Dome or closed roof",
   is_turf: "Artificial surface",
   temp: "Temperature",
-  wind: "Wind"
+  wind: "Wind",
+  home_win_pct: "Home win rate",
+  away_win_pct: "Away win rate",
+  win_pct_diff: "Win rate edge",
+  home_points_for_avg: "Home scoring average",
+  away_points_for_avg: "Away scoring average",
+  points_for_diff: "Scoring edge",
+  home_points_allowed_avg: "Home points allowed",
+  away_points_allowed_avg: "Away points allowed",
+  points_allowed_diff: "Defense edge",
+  home_point_diff_avg: "Home point margin",
+  away_point_diff_avg: "Away point margin",
+  point_diff_diff: "Point margin edge",
+  games_played_diff: "Experience edge"
 };
 
 const importanceDescriptions = {
@@ -91,7 +104,20 @@ const importanceDescriptions = {
   div_game: "Division game",
   temp: "Temperature",
   wind: "Wind",
-  rest_diff: "Rest edge"
+  rest_diff: "Rest edge",
+  home_win_pct: "Home win rate",
+  away_win_pct: "Away win rate",
+  win_pct_diff: "Win rate edge",
+  home_points_for_avg: "Home scoring average",
+  away_points_for_avg: "Away scoring average",
+  points_for_diff: "Scoring edge",
+  home_points_allowed_avg: "Home points allowed",
+  away_points_allowed_avg: "Away points allowed",
+  points_allowed_diff: "Defense edge",
+  home_point_diff_avg: "Home point margin",
+  away_point_diff_avg: "Away point margin",
+  point_diff_diff: "Point margin edge",
+  games_played_diff: "Experience edge"
 };
 
 const metricDescriptions = {
@@ -106,6 +132,10 @@ const metricDescriptions = {
 };
 
 const form = document.querySelector("#prediction-form");
+
+function currentMode() {
+  return form.elements.model_mode.value;
+}
 
 function formatPercent(value) {
   return `${(value * 100).toFixed(1)}%`;
@@ -143,6 +173,7 @@ function readForm() {
     "wind"
   ];
   const payload = {
+    model_mode: currentMode(),
     home_team: data.get("home_team"),
     away_team: data.get("away_team"),
     roof: data.get("roof"),
@@ -155,6 +186,13 @@ function readForm() {
   return payload;
 }
 
+function updateModeUi() {
+  const isTeamMode = currentMode() === "team";
+  document.querySelectorAll(".market-field").forEach((field) => {
+    field.hidden = isTeamMode;
+  });
+}
+
 function renderPrediction(result) {
   const homePct = formatPercent(result.home_win_probability);
   const awayPct = formatPercent(result.away_win_probability);
@@ -165,7 +203,8 @@ function renderPrediction(result) {
   const edgeText = edge < 0.06 ? "nearly even" : edge < 0.12 ? "slightly favored" : "favored";
 
   document.querySelector("#result-matchup").textContent = result.matchup;
-  document.querySelector("#confidence").textContent = `${result.confidence} confidence`;
+  document.querySelector("#confidence").textContent =
+    `${result.model_mode === "team" ? "Team-stat" : "Market"} | ${result.confidence} confidence`;
   document.querySelector("#pick").textContent = result.pick;
   document.querySelector("#prediction-summary").textContent =
     `${result.pick} is ${edgeText} with a ${formatPercent(pickProbability)} win probability. ` +
@@ -206,21 +245,21 @@ async function predict() {
 }
 
 async function loadMetrics() {
-  const response = await fetch("/api/metrics");
+  const response = await fetch(`/api/metrics?model_mode=${currentMode()}`);
   const metrics = await response.json();
-  const logistic = metrics.models.logistic_regression;
+  const selected = metrics.models[metrics.best_model];
   document.querySelector("#rows").textContent = metrics.rows.toLocaleString();
-  document.querySelector("#auc").textContent = logistic.roc_auc.toFixed(3);
-  document.querySelector("#accuracy").textContent = formatPercent(logistic.accuracy);
+  document.querySelector("#auc").textContent = selected.roc_auc.toFixed(3);
+  document.querySelector("#accuracy").textContent = formatPercent(selected.accuracy);
   document.querySelector("#metrics-table").innerHTML = [
     ["Best model", metrics.best_model.replace("_", " ")],
     ["Rows", metrics.rows.toLocaleString()],
     ["Train rows", metrics.train_rows.toLocaleString()],
     ["Test rows", metrics.test_rows.toLocaleString()],
-    ["Accuracy", formatPercent(logistic.accuracy)],
-    ["ROC AUC", logistic.roc_auc.toFixed(4)],
-    ["Brier score", logistic.brier_score.toFixed(4)],
-    ["Log loss", logistic.log_loss.toFixed(4)]
+    ["Accuracy", formatPercent(selected.accuracy)],
+    ["ROC AUC", selected.roc_auc.toFixed(4)],
+    ["Brier score", selected.brier_score.toFixed(4)],
+    ["Log loss", selected.log_loss.toFixed(4)]
   ]
     .map(([label, value]) => `
       <div class="metric-card">
@@ -233,7 +272,7 @@ async function loadMetrics() {
 }
 
 async function loadImportance() {
-  const response = await fetch("/api/feature-importance");
+  const response = await fetch(`/api/feature-importance?model_mode=${currentMode()}`);
   const rows = await response.json();
   const topRows = rows.slice(0, 8);
   const max = Math.max(...topRows.map((row) => Math.abs(row.importance)));
@@ -258,6 +297,15 @@ document.querySelectorAll("[data-scenario]").forEach((button) => {
   });
 });
 
+document.querySelectorAll("input[name='model_mode']").forEach((input) => {
+  input.addEventListener("change", () => {
+    updateModeUi();
+    loadMetrics().catch(console.error);
+    loadImportance().catch(console.error);
+    predict().catch(console.error);
+  });
+});
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   predict().catch((error) => {
@@ -267,6 +315,7 @@ form.addEventListener("submit", (event) => {
 });
 
 populateTeams();
+updateModeUi();
 loadMetrics().catch(console.error);
 loadImportance().catch(console.error);
 predict().catch(console.error);

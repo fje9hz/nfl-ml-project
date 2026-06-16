@@ -154,6 +154,48 @@ button {
   cursor: pointer;
 }
 
+.mode-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: #fbfcfa;
+}
+
+.mode-toggle legend {
+  padding: 0 6px;
+  color: #39475b;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.mode-toggle label {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px 10px;
+  align-items: start;
+  padding: 10px;
+  border: 1px solid #d6ded5;
+  background: #fff;
+}
+
+.mode-toggle input {
+  width: 16px;
+  min-height: 16px;
+  margin-top: 2px;
+}
+
+.mode-toggle span,
+.mode-toggle small {
+  grid-column: 2;
+}
+
+.mode-toggle span {
+  margin: 0;
+}
+
 .scenario-group {
   margin-bottom: 16px;
   padding: 12px;
@@ -527,6 +569,7 @@ select:focus {
   }
 
   .field-grid,
+  .mode-toggle,
   .scenario-buttons,
   .feature-values,
   .metrics-table,
