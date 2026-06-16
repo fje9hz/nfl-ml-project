@@ -13,6 +13,7 @@ The real dataset comes from the public `nflverse`/Lee Sharpe NFL game file. It i
 - Saves the trained model pipeline to `models/nfl_win_model.joblib`
 - Writes evaluation metrics and feature importance outputs to `reports/`
 - Runs single-game predictions from the command line
+- Serves an interactive web app with FastAPI
 
 ## Project Structure
 
@@ -29,8 +30,14 @@ nfl-ml-project/
       data.py
       predict.py
       train.py
+      service.py
+      web.py
   tests/
     test_features.py
+  web/
+    index.html
+    styles.css
+    app.js
 ```
 
 ## Setup
@@ -75,6 +82,20 @@ python -m nfl_ml.predict \
   --temp 65 \
   --wind 8
 ```
+
+## Launch the Web App
+
+```bash
+python3 -m uvicorn nfl_ml.web:app --reload
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000
+```
+
+The app includes matchup inputs, win probabilities, model metrics, and a feature importance chart.
 
 ## Run Tests
 

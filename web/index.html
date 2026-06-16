@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NFL Win Probability Predictor</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">NFL ML Project</p>
+          <h1>NFL Win Probability Predictor</h1>
+          <p class="subtitle">
+            Compare a matchup using real NFL game data, betting market inputs, rest,
+            weather, and stadium conditions.
+          </p>
+        </div>
+        <div class="metric-strip" aria-label="Model summary">
+          <div>
+            <span id="rows">4,175</span>
+            <small>real games</small>
+          </div>
+          <div>
+            <span id="auc">0.728</span>
+            <small>ROC AUC</small>
+          </div>
+          <div>
+            <span id="accuracy">67.9%</span>
+            <small>accuracy</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <form id="prediction-form" class="panel form-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Matchup Inputs</h2>
+              <p>Spread is from the away-team perspective. Positive means the home team is favored.</p>
+            </div>
+            <button type="button" id="load-example">Example</button>
+          </div>
+
+          <div class="field-grid teams">
+            <label>
+              <span>Away Team</span>
+              <select name="away_team" required></select>
+            </label>
+            <label>
+              <span>Home Team</span>
+              <select name="home_team" required></select>
+            </label>
+          </div>
+
+          <div class="field-grid">
+            <label>
+              <span>Spread Line</span>
+              <input name="spread_line" type="number" step="0.5" value="3.5" required />
+            </label>
+            <label>
+              <span>Total Line</span>
+              <input name="total_line" type="number" step="0.5" value="47.5" required />
+            </label>
+            <label>
+              <span>Away Moneyline</span>
+              <input name="away_moneyline" type="number" step="1" value="150" required />
+            </label>
+            <label>
+              <span>Home Moneyline</span>
+              <input name="home_moneyline" type="number" step="1" value="-170" required />
+            </label>
+            <label>
+              <span>Away Rest</span>
+              <input name="away_rest" type="number" step="1" value="6" min="0" required />
+            </label>
+            <label>
+              <span>Home Rest</span>
+              <input name="home_rest" type="number" step="1" value="7" min="0" required />
+            </label>
+            <label>
+              <span>Roof</span>
+              <select name="roof">
+                <option value="outdoors">Outdoors</option>
+                <option value="dome">Dome</option>
+                <option value="closed">Closed</option>
+                <option value="open">Open</option>
+              </select>
+            </label>
+            <label>
+              <span>Surface</span>
+              <select name="surface">
+                <option value="grass">Grass</option>
+                <option value="fieldturf">FieldTurf</option>
+                <option value="astroturf">AstroTurf</option>
+                <option value="sportturf">SportTurf</option>
+              </select>
+            </label>
+            <label>
+              <span>Temperature</span>
+              <input name="temp" type="number" step="1" value="65" />
+            </label>
+            <label>
+              <span>Wind</span>
+              <input name="wind" type="number" step="1" value="8" min="0" />
+            </label>
+          </div>
+
+          <label class="toggle-row">
+            <input name="div_game" type="checkbox" checked />
+            <span>Division game</span>
+          </label>
+
+          <button class="primary-action" type="submit">Predict Matchup</button>
+        </form>
+
+        <section class="panel result-panel" aria-live="polite">
+          <div class="panel-header compact">
+            <div>
+              <h2>Prediction</h2>
+              <p id="result-matchup">DAL at SF</p>
+            </div>
+            <span id="confidence" class="badge">Medium</span>
+          </div>
+
+          <div class="probability-card">
+            <div>
+              <small>Model Pick</small>
+              <strong id="pick">SF</strong>
+            </div>
+            <div class="probability-ring" id="home-ring">
+              <span id="home-probability">58.3%</span>
+            </div>
+          </div>
+
+          <div class="bars">
+            <div>
+              <div class="bar-label">
+                <span id="home-label">SF win</span>
+                <strong id="home-bar-value">58.3%</strong>
+              </div>
+              <div class="bar-track"><div id="home-bar" class="bar-fill home"></div></div>
+            </div>
+            <div>
+              <div class="bar-label">
+                <span id="away-label">DAL win</span>
+                <strong id="away-bar-value">41.7%</strong>
+              </div>
+              <div class="bar-track"><div id="away-bar" class="bar-fill away"></div></div>
+            </div>
+          </div>
+
+          <div class="feature-box">
+            <h3>Model Features Used</h3>
+            <div id="feature-values" class="feature-values"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="insights">
+        <div class="panel">
+          <div class="panel-header compact">
+            <div>
+              <h2>Feature Importance</h2>
+              <p>Largest coefficients from the selected model.</p>
+            </div>
+          </div>
+          <div id="importance-chart" class="importance-chart"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header compact">
+            <div>
+              <h2>Model Metrics</h2>
+              <p>Chronological test split on real NFL games.</p>
+            </div>
+          </div>
+          <div id="metrics-table" class="metrics-table"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

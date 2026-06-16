@@ -2,12 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 
-import joblib
-import pandas as pd
-
-from nfl_ml.features import add_matchup_features
+from nfl_ml.service import predict_matchup
 
 
 def parse_args() -> argparse.Namespace:
@@ -31,43 +27,24 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    model_path = Path(args.model)
-    if not model_path.exists():
-        raise FileNotFoundError(
-            f"Model file not found at {model_path}. Train first with python -m nfl_ml.train."
-        )
-
-    artifact = joblib.load(model_path)
-    pipeline = artifact["pipeline"]
-
-    row = pd.DataFrame(
-        [
-            {
-                "spread_line": args.spread_line,
-                "total_line": args.total_line,
-                "home_rest": args.home_rest,
-                "away_rest": args.away_rest,
-                "home_moneyline": args.home_moneyline,
-                "away_moneyline": args.away_moneyline,
-                "div_game": args.div_game,
-                "roof": args.roof,
-                "surface": args.surface,
-                "temp": args.temp,
-                "wind": args.wind,
-            }
-        ]
+    result = predict_matchup(
+        {
+            "home_team": args.home_team,
+            "away_team": args.away_team,
+            "spread_line": args.spread_line,
+            "total_line": args.total_line,
+            "home_rest": args.home_rest,
+            "away_rest": args.away_rest,
+            "home_moneyline": args.home_moneyline,
+            "away_moneyline": args.away_moneyline,
+            "div_game": args.div_game,
+            "roof": args.roof,
+            "surface": args.surface,
+            "temp": args.temp,
+            "wind": args.wind,
+        },
+        model_path=args.model,
     )
-    feature_columns = artifact["feature_columns"]
-    x = add_matchup_features(row)[feature_columns]
-    probability = float(pipeline.predict_proba(x)[:, 1][0])
-
-    result = {
-        "matchup": f"{args.away_team} at {args.home_team}",
-        "model": artifact["model_name"],
-        "home_win_probability": round(probability, 4),
-        "away_win_probability": round(1 - probability, 4),
-        "pick": args.home_team if probability >= 0.5 else args.away_team,
-    }
     print(json.dumps(result, indent=2))
 
 

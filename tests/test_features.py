@@ -8,6 +8,7 @@ from nfl_ml.features import (
     add_matchup_features,
     build_model_matrix,
 )
+from nfl_ml.service import confidence_label
 
 
 def sample_row(home_win=1):
@@ -139,3 +140,9 @@ def test_prepare_games_filters_completed_regular_season_games():
 
     assert len(prepared) == 1
     assert prepared.loc[0, "home_win"] == 1
+
+
+def test_confidence_label_tracks_probability_edge():
+    assert confidence_label(0.51) == "Low"
+    assert confidence_label(0.61) == "Medium"
+    assert confidence_label(0.75) == "High"
