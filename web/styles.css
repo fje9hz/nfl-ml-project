@@ -53,10 +53,18 @@ p {
 
 h1 {
   max-width: 780px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   font-size: clamp(40px, 7vw, 76px);
   line-height: 0.95;
   letter-spacing: 0;
+}
+
+.hero-kicker {
+  margin-bottom: 8px;
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 850;
+  line-height: 1.25;
 }
 
 .subtitle {
