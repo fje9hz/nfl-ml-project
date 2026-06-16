@@ -1,13 +1,13 @@
 # NFL Game Outcome Machine Learning Project
 
-This project trains a machine learning model to predict whether the home team wins an NFL game from pregame and season-to-date team metrics.
+This project trains a machine learning model to predict whether the home team wins an NFL game from real historical NFL game data.
 
-It is intentionally self-contained: the repository includes a small NFL-style sample dataset so the pipeline runs without API keys or internet access. You can replace `data/nfl_games_sample.csv` with real historical game data later.
+The real dataset comes from the public `nflverse`/Lee Sharpe NFL game file. It includes completed NFL games, scores, rest days, betting lines, moneylines, weather, roof/surface, and division-game flags.
 
 ## What It Does
 
-- Loads game-level NFL data
-- Engineers matchup features such as Elo gap, rest gap, efficiency gap, and turnover gap
+- Downloads real NFL game data
+- Engineers matchup features such as spread, total, rest differential, implied moneyline probabilities, weather, roof/surface, and division-game status
 - Trains a logistic regression model and a random forest model
 - Selects the best model by ROC AUC
 - Saves the trained model pipeline to `models/nfl_win_model.joblib`
@@ -19,12 +19,14 @@ It is intentionally self-contained: the repository includes a small NFL-style sa
 ```text
 nfl-ml-project/
   data/
+    nfl_games_real.csv
     nfl_games_sample.csv
   models/
   reports/
   src/
     nfl_ml/
       features.py
+      data.py
       predict.py
       train.py
   tests/
@@ -45,7 +47,8 @@ That installs the local `nfl_ml` package in editable mode, so the `python -m nfl
 ## Train the Model
 
 ```bash
-python -m nfl_ml.train --data data/nfl_games_sample.csv
+python -m nfl_ml.data --start-season 2010
+python -m nfl_ml.train --data data/nfl_games_real.csv
 ```
 
 After training, check:
@@ -60,19 +63,17 @@ After training, check:
 python -m nfl_ml.predict \
   --home-team SF \
   --away-team DAL \
-  --home-elo 1685 \
-  --away-elo 1605 \
-  --home-rest-days 7 \
-  --away-rest-days 6 \
-  --home-offense-epa 0.13 \
-  --away-offense-epa 0.09 \
-  --home-defense-epa -0.05 \
-  --away-defense-epa -0.02 \
-  --home-turnover-margin 4 \
-  --away-turnover-margin 1 \
-  --home-injury-score 2 \
-  --away-injury-score 4 \
-  --is-division-game 1
+  --spread-line 3.5 \
+  --total-line 47.5 \
+  --home-rest 7 \
+  --away-rest 6 \
+  --home-moneyline -170 \
+  --away-moneyline 150 \
+  --div-game 1 \
+  --roof outdoors \
+  --surface grass \
+  --temp 65 \
+  --wind 8
 ```
 
 ## Run Tests
@@ -88,18 +89,18 @@ pytest
 | `season` | NFL season year |
 | `week` | Week number |
 | `home_team`, `away_team` | Team abbreviations |
-| `home_elo`, `away_elo` | Team strength ratings before the game |
-| `home_rest_days`, `away_rest_days` | Days of rest before kickoff |
-| `home_offense_epa`, `away_offense_epa` | Season-to-date offensive EPA/play estimate |
-| `home_defense_epa`, `away_defense_epa` | Season-to-date defensive EPA/play estimate, lower is better |
-| `home_turnover_margin`, `away_turnover_margin` | Season-to-date turnover margin |
-| `home_injury_score`, `away_injury_score` | Approximate injury burden, lower is healthier |
-| `is_division_game` | 1 if teams are in the same division, else 0 |
+| `home_score`, `away_score` | Final score |
+| `home_rest`, `away_rest` | Days of rest before kickoff |
+| `home_moneyline`, `away_moneyline` | Closing moneyline odds |
+| `spread_line` | Closing spread line from the away-team perspective; positive means the home team is favored |
+| `total_line` | Closing over/under total |
+| `div_game` | 1 if teams are in the same division, else 0 |
+| `roof`, `surface`, `temp`, `wind` | Game environment fields |
 | `home_win` | Target variable: 1 if home team won, else 0 |
 
 ## Next Upgrades
 
-- Swap the sample CSV for `nflverse` or `nflfastR` historical data
-- Add betting spread and closing total features
+- Add rolling team performance features from `nflfastR` play-by-play EPA
+- Add quarterback injuries and starter changes
 - Use time-series validation by season/week
 - Build a Streamlit dashboard for matchup predictions
