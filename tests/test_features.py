@@ -6,7 +6,9 @@ from nfl_ml.features import (
     MODEL_FEATURE_COLUMNS,
     REAL_MODEL_FEATURE_COLUMNS,
     TEAM_STAT_MODEL_FEATURE_COLUMNS,
+    COMBINED_MODEL_FEATURE_COLUMNS,
     add_matchup_features,
+    build_combined_model_matrix,
     build_team_stat_model_matrix,
     build_model_matrix,
 )
@@ -199,4 +201,41 @@ def test_team_stat_model_matrix_uses_prior_games_only():
     assert featured.loc[0, "home_win_pct"] == 0.5
     assert featured.loc[1, "home_win_pct"] == 1.0
     assert featured.loc[1, "away_win_pct"] == 0.0
+    assert team_profiles["BBB"]["win_pct"] == 1.0
+
+
+def test_combined_model_matrix_includes_market_and_team_features():
+    games = pd.DataFrame(
+        [
+            {
+                "game_id": "2024_01_AAA_BBB",
+                "season": 2024,
+                "week": 1,
+                "gameday": "2024-09-08",
+                "away_team": "AAA",
+                "home_team": "BBB",
+                "away_score": 10,
+                "home_score": 20,
+                "home_win": 1,
+                "away_rest": 7,
+                "home_rest": 7,
+                "away_moneyline": 120,
+                "home_moneyline": -140,
+                "spread_line": 2.5,
+                "total_line": 42.5,
+                "div_game": 0,
+                "roof": "outdoors",
+                "surface": "grass",
+                "temp": 65,
+                "wind": 5,
+            }
+        ]
+    )
+
+    x, y, _, team_profiles = build_combined_model_matrix(games)
+
+    assert list(x.columns) == COMBINED_MODEL_FEATURE_COLUMNS
+    assert x.loc[0, "spread_line"] == 2.5
+    assert x.loc[0, "home_win_pct"] == 0.5
+    assert y.tolist() == [1]
     assert team_profiles["BBB"]["win_pct"] == 1.0

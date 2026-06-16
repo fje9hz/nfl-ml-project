@@ -16,7 +16,7 @@ The real dataset comes from the public `nflverse`/Lee Sharpe NFL game file. It i
 - Writes evaluation metrics and feature importance outputs to `reports/`
 - Runs single-game predictions from the command line
 - Serves an interactive web app with FastAPI
-- Supports two prediction modes: market-aware and team-stat/no-Vegas
+- Supports three prediction modes: market-aware, team-stat/no-Vegas, and combined
 
 ## Project Structure
 
@@ -65,17 +65,21 @@ After training, check:
 
 - `models/nfl_win_model.joblib`
 - `models/nfl_team_model.joblib`
+- `models/nfl_combined_model.joblib`
 - `reports/metrics.json`
 - `reports/feature_importance.csv`
 - `reports/team_metrics.json`
 - `reports/team_feature_importance.csv`
+- `reports/combined_metrics.json`
+- `reports/combined_feature_importance.csv`
 
 ## Prediction Modes
 
-The app has two model modes:
+The app has three model modes:
 
 - **Market-aware:** uses spread, total, moneyline, rest, weather, surface, roof, and division-game context. This is usually more accurate because betting markets summarize a lot of team-strength information.
 - **Team-stat:** hides Vegas inputs and uses each team's historical win rate, scoring average, points allowed, point differential, rest, weather, surface, roof, and division-game context. This makes team selection affect the prediction directly, but performance is lower because it excludes market information.
+- **Combined:** uses both market inputs and team-history features. This tests whether team stats add useful signal on top of betting-market information.
 
 Current metrics:
 
@@ -83,6 +87,7 @@ Current metrics:
 | --- | ---: | ---: |
 | Market-aware | 67.9% | 0.7276 |
 | Team-stat | 57.8% | 0.5911 |
+| Combined | 68.0% | 0.7259 |
 
 ## Make a Prediction
 

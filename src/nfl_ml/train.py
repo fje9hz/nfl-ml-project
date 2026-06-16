@@ -14,7 +14,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from nfl_ml.features import build_model_matrix, build_team_stat_model_matrix
+from nfl_ml.features import (
+    build_combined_model_matrix,
+    build_model_matrix,
+    build_team_stat_model_matrix,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -25,9 +29,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--importance-out", default="reports/feature_importance.csv")
     parser.add_argument(
         "--model-type",
-        choices=["market", "team"],
+        choices=["market", "team", "combined"],
         default="market",
-        help="market uses betting lines; team uses rolling team stats without Vegas inputs.",
+        help="market uses betting lines; team uses no Vegas; combined uses both.",
     )
     parser.add_argument("--test-size", type=float, default=0.25)
     parser.add_argument("--random-state", type=int, default=42)
@@ -133,6 +137,9 @@ def main() -> None:
     artifact_extra = {}
     if args.model_type == "team":
         x, y, split_df, team_profiles = build_team_stat_model_matrix(df)
+        artifact_extra["team_profiles"] = team_profiles
+    elif args.model_type == "combined":
+        x, y, split_df, team_profiles = build_combined_model_matrix(df)
         artifact_extra["team_profiles"] = team_profiles
     else:
         x, y = build_model_matrix(df)

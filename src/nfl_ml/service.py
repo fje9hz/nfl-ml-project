@@ -8,20 +8,27 @@ from typing import Any
 import joblib
 import pandas as pd
 
-from nfl_ml.features import add_matchup_features, add_team_stat_matchup_features
+from nfl_ml.features import (
+    add_matchup_features,
+    add_real_matchup_features,
+    add_team_stat_matchup_features,
+)
 
 
 MODEL_PATHS = {
     "market": Path("models/nfl_win_model.joblib"),
     "team": Path("models/nfl_team_model.joblib"),
+    "combined": Path("models/nfl_combined_model.joblib"),
 }
 METRICS_PATHS = {
     "market": Path("reports/metrics.json"),
     "team": Path("reports/team_metrics.json"),
+    "combined": Path("reports/combined_metrics.json"),
 }
 IMPORTANCE_PATHS = {
     "market": Path("reports/feature_importance.csv"),
     "team": Path("reports/team_feature_importance.csv"),
+    "combined": Path("reports/combined_feature_importance.csv"),
 }
 
 
@@ -60,6 +67,9 @@ def build_prediction_features(
     feature_columns = artifact["feature_columns"]
     if model_mode == "team":
         return add_team_stat_matchup_features(row, artifact["team_profiles"])[feature_columns]
+    if model_mode == "combined":
+        team_features = add_team_stat_matchup_features(row, artifact["team_profiles"])
+        return add_real_matchup_features(team_features)[feature_columns]
     return add_matchup_features(row)[feature_columns]
 
 

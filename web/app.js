@@ -193,6 +193,12 @@ function updateModeUi() {
   });
 }
 
+function modeLabel(mode) {
+  if (mode === "team") return "Team-stat";
+  if (mode === "combined") return "Combined";
+  return "Market";
+}
+
 function renderPrediction(result) {
   const homePct = formatPercent(result.home_win_probability);
   const awayPct = formatPercent(result.away_win_probability);
@@ -204,7 +210,7 @@ function renderPrediction(result) {
 
   document.querySelector("#result-matchup").textContent = result.matchup;
   document.querySelector("#confidence").textContent =
-    `${result.model_mode === "team" ? "Team-stat" : "Market"} | ${result.confidence} confidence`;
+    `${modeLabel(result.model_mode)} | ${result.confidence} confidence`;
   document.querySelector("#pick").textContent = result.pick;
   document.querySelector("#prediction-summary").textContent =
     `${result.pick} is ${edgeText} with a ${formatPercent(pickProbability)} win probability. ` +

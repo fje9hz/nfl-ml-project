@@ -9,7 +9,7 @@ from nfl_ml.service import predict_matchup
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Predict an NFL home-team win probability.")
     parser.add_argument("--model", default="models/nfl_win_model.joblib")
-    parser.add_argument("--model-mode", choices=["market", "team"], default="market")
+    parser.add_argument("--model-mode", choices=["market", "team", "combined"], default="market")
     parser.add_argument("--home-team", required=True)
     parser.add_argument("--away-team", required=True)
     parser.add_argument("--spread-line", type=float, required=True)

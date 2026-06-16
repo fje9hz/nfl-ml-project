@@ -90,6 +90,13 @@ TEAM_STAT_MODEL_FEATURE_COLUMNS = [
     "wind",
 ]
 
+COMBINED_MODEL_FEATURE_COLUMNS = [
+    "spread_line",
+    "total_line",
+    "home_implied_prob",
+    "implied_prob_diff",
+] + TEAM_STAT_MODEL_FEATURE_COLUMNS
+
 MODEL_FEATURE_COLUMNS = SAMPLE_MODEL_FEATURE_COLUMNS
 TARGET_COLUMN = "home_win"
 
@@ -318,6 +325,8 @@ def add_team_stat_matchup_features(
 
 
 def detect_schema(df: pd.DataFrame) -> str:
+    if set(COMBINED_MODEL_FEATURE_COLUMNS).issubset(df.columns):
+        return "combined"
     if set(TEAM_STAT_MODEL_FEATURE_COLUMNS).issubset(df.columns):
         return "team_stat"
     if set(REAL_RAW_FEATURE_COLUMNS).issubset(df.columns):
@@ -332,6 +341,8 @@ def detect_schema(df: pd.DataFrame) -> str:
 
 def add_matchup_features(df: pd.DataFrame) -> pd.DataFrame:
     schema = detect_schema(df)
+    if schema == "combined":
+        return add_real_matchup_features(add_team_stat_matchup_features(df))
     if schema == "team_stat":
         return add_team_stat_matchup_features(df)
     if schema == "real_nflverse_games":
@@ -341,6 +352,8 @@ def add_matchup_features(df: pd.DataFrame) -> pd.DataFrame:
 
 def get_model_feature_columns(df: pd.DataFrame) -> list[str]:
     schema = detect_schema(df)
+    if schema == "combined":
+        return COMBINED_MODEL_FEATURE_COLUMNS
     if schema == "team_stat":
         return TEAM_STAT_MODEL_FEATURE_COLUMNS
     if schema == "real_nflverse_games":
@@ -361,6 +374,17 @@ def build_team_stat_model_matrix(
 ) -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, dict[str, dict[str, float]]]:
     featured = add_environment_features(build_team_stat_rows(df))
     x = featured[TEAM_STAT_MODEL_FEATURE_COLUMNS]
+    y = featured[TARGET_COLUMN].astype(int)
+    team_profiles = build_latest_team_profiles(df)
+    return x, y, featured, team_profiles
+
+
+def build_combined_model_matrix(
+    df: pd.DataFrame,
+) -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, dict[str, dict[str, float]]]:
+    team_rows = build_team_stat_rows(df)
+    featured = add_real_matchup_features(add_team_stat_matchup_features(team_rows))
+    x = featured[COMBINED_MODEL_FEATURE_COLUMNS]
     y = featured[TARGET_COLUMN].astype(int)
     team_profiles = build_latest_team_profiles(df)
     return x, y, featured, team_profiles

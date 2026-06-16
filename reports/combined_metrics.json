@@ -1,0 +1,48 @@
+{
+  "best_model": "logistic_regression",
+  "model_type": "combined",
+  "rows": 4175,
+  "train_rows": 3131,
+  "test_rows": 1044,
+  "target_rate_home_win": 0.5526,
+  "feature_columns": [
+    "spread_line",
+    "total_line",
+    "home_implied_prob",
+    "implied_prob_diff",
+    "home_win_pct",
+    "away_win_pct",
+    "win_pct_diff",
+    "home_points_for_avg",
+    "away_points_for_avg",
+    "points_for_diff",
+    "home_points_allowed_avg",
+    "away_points_allowed_avg",
+    "points_allowed_diff",
+    "home_point_diff_avg",
+    "away_point_diff_avg",
+    "point_diff_diff",
+    "games_played_diff",
+    "rest_diff",
+    "div_game",
+    "is_dome",
+    "is_turf",
+    "temp",
+    "wind"
+  ],
+  "split": "chronological",
+  "models": {
+    "logistic_regression": {
+      "roc_auc": 0.7259,
+      "accuracy": 0.6801,
+      "brier_score": 0.2092,
+      "log_loss": 0.605
+    },
+    "random_forest": {
+      "roc_auc": 0.6955,
+      "accuracy": 0.637,
+      "brier_score": 0.22,
+      "log_loss": 0.632
+    }
+  }
+}
