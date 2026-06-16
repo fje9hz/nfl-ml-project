@@ -13,6 +13,7 @@ The app is ready to deploy as a Python web service. The simplest path is Render.
 Build Command: pip install -r requirements.txt
 Start Command: python3 -m uvicorn nfl_ml.web:app --host 0.0.0.0 --port $PORT
 Health Check Path: /api/health
+Python Runtime: python-3.11.11
 ```
 
 After the first deploy finishes, Render gives you a public `onrender.com` URL.
