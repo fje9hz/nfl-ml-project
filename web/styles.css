@@ -75,6 +75,26 @@ h1 {
   line-height: 1.55;
 }
 
+.hero-side {
+  display: grid;
+  gap: 10px;
+  width: min(360px, 38vw);
+}
+
+.logo-card {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.logo-card img {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  margin: 0 auto;
+}
+
 .metric-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(92px, 1fr));
@@ -615,6 +635,14 @@ select:focus {
 
   .metric-strip {
     width: 100%;
+  }
+
+  .hero-side {
+    width: 100%;
+  }
+
+  .logo-card img {
+    max-width: 260px;
   }
 
   .probability-card {
